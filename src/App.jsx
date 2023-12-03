@@ -1,5 +1,9 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 function App() {
+  const [login, setLogin] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const {
     register,
     reset,
@@ -8,8 +12,26 @@ function App() {
   } = useForm({
     mode: "onSubmit"
   });
-
+  const post = async(data) => {
+    const response = await fetch('http://localhost:5000/api/data', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    await response.json();
+  }
   const onSubmit = () => {
+    const data = {
+      login: login,
+      firstName: firstName,
+      lastName: lastName
+    };
+    post(data);
+    setLogin('');
+    setFirstName('');
+    setLastName('');
     reset({login: "", firstName: "", lastName: ""});
   };
   return (
@@ -24,8 +46,10 @@ function App() {
               pattern: {
                 value: /[a-zA-Z]/,
                 message: "русский военный корабль иди..."
-              }
+              },
             })}
+            value={login}
+            onChange={e=>setLogin(e.target.value)}
           />
         </label>
         <div style={{ height: 40 }}>
@@ -43,6 +67,8 @@ function App() {
                 message: "Мінімальне значення 5"
               }
             })}
+            value={firstName}
+            onChange={e=>setFirstName(e.target.value)}
           />
         </label>
         <div style={{ height: 40 }}>
@@ -64,6 +90,8 @@ function App() {
                 message: "Максимальне значення 25"
               }
             })}
+            value={lastName}
+            onChange={e=>setLastName(e.target.value)}
           />
         </label>
         <div style={{ height: 40 }}>
